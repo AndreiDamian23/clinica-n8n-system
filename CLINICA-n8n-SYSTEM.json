@@ -2601,6 +2601,7 @@
         5344,
         -6640
       ],
+      "alwaysOutputData": true,
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "kNw8XERi8nYRHXjy",
