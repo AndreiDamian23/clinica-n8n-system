@@ -1,0 +1,14 @@
+This is my AI appointment system using n8n.
+
+I have:
+- Booking voice agent
+- Confirmation SMS system
+- Confirmation voice agent (fallback)
+- No-show tracking system
+- Follow-up recovery system
+
+Analyze the workflow and:
+1. Identify weaknesses
+2. Suggest improvements in logic
+3. Suggest edge cases I might miss
+4. Propose a more scalable architecture
