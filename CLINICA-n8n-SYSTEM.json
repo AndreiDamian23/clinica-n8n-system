@@ -1,0 +1,3357 @@
+{
+  "name": "Flow 4 - Agent Vocal Confirmare Programare",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "options": {}
+      },
+      "id": "35d652d5-930c-4660-a8db-4c63e5b4adce",
+      "name": "Sheets - Citeste Programari SMS",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5024,
+        -7728
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-data",
+              "leftValue": "={{ $json['DATA PROGRAMARII'] }}",
+              "rightValue": "={{ $now.plus(1, 'day').toFormat('dd.MM.yyyy') }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "cond-sms",
+              "leftValue": "={{ $json['SMS_TRIMIS'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6a186b2a-be5e-4010-a1ae-3783be442768",
+      "name": "IF - Programare Maine + SMS Negol",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5312,
+        -7728
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://secure.smslink.ro/sms/gateway/communicate/index.php",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "connection_id",
+              "value": "A682957A23817C23"
+            },
+            {
+              "name": "password",
+              "value": "iic75G6GnhewEqnX"
+            },
+            {
+              "name": "to",
+              "value": "={{ $json.TELEFON }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.mesaj_sms }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b61b8a4c-9441-42a1-98bf-fe8c40933f39",
+      "name": "SMSLink - Trimite SMS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5856,
+        -7728
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SMS_TRIMIS": "TRIMIS",
+            "TELEFON": "={{ $('Code - Prepara Mesaj SMS1').first().json.TELEFON }}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "NUME",
+              "displayName": "NUME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SERVICIU",
+              "displayName": "SERVICIU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DATA PROGRAMARII",
+              "displayName": "DATA PROGRAMARII",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ORA",
+              "displayName": "ORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SMS_TRIMIS",
+              "displayName": "SMS_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "APEL_TRIMIS",
+              "displayName": "APEL_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1ca15352-ff74-4d83-bc13-5dba3ced3e93",
+      "name": "Sheets - SMS_TRIMIS = TRIMIS",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        6176,
+        -7728
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "confirmare",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e54dda04-778b-4962-8a06-0bfcdc632388",
+      "name": "Webhook - Confirmare prin link",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        4752,
+        -7520
+      ],
+      "webhookId": "420551b9-44e6-46db-9b42-8ea383be9e8c"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "TELEFON",
+              "lookupValue": "={{ $json.query.tel }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9b5c054e-3cec-421c-a8b7-243f0c040df7",
+      "name": "Sheets - Gaseste Client dupa Telefon",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5024,
+        -7520
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "STATUS": "VALID",
+            "TELEFON": "={{ $json.TELEFON }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d275b85b-07f0-41ad-a466-b58b511a0e00",
+      "name": "Sheets - STATUS = VALID (Link)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5312,
+        -7520
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "elevenlabs-webhook-confirmare",
+        "options": {}
+      },
+      "id": "d135e340-d5cd-4fd3-bcaa-24aa9c4d17b2",
+      "name": "Webhook - ElevenLabs Confirmare",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        4768,
+        -6976
+      ],
+      "webhookId": "c109a6ec-e45e-44a9-9437-1227ce05d21a"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nlet telefon = '';\nlet tipRaspuns = 'neclar';\nlet dataNou = '';\nlet oraNou = '';\n\nif (body.data && body.data.transcript) {\n  const transcript = body.data.transcript || [];\n  const userMessages = transcript\n    .filter(msg => msg.role === 'user')\n    .map(msg => msg.message)\n    .join(' ').toLowerCase();\n\n  if (userMessages.trim().length < 3) {\n    tipRaspuns = 'neclar';\n  } else {\n    const esteReprogramare = userMessages.includes('reprogramez') ||\n                              userMessages.includes('alta zi') ||\n                              userMessages.includes('mut');\n\n    const esteAnulare = userMessages.includes('anulez') ||\n                        userMessages.includes('nu pot') ||\n                        userMessages.includes('nu mai vin') ||\n                        userMessages.includes('nu mai vreau');\n\n    const esteConfirmare = userMessages.includes('da') ||\n                           userMessages.includes('confirm') ||\n                           userMessages.includes('vin') ||\n                           userMessages.includes('ok') ||\n                           userMessages.includes('bine');\n\n    if (esteReprogramare) tipRaspuns = 'reprogramare';\n    else if (esteAnulare) tipRaspuns = 'anulare';\n    else if (esteConfirmare) tipRaspuns = 'confirmare';\n    else tipRaspuns = 'neclar';\n  }\n\n  const vars = body.data?.collected_data || {};\n  dataNou = vars.data_noua || '';\n  oraNou = vars.ora_noua || '';\n\n  const callerIdRaw = body.data?.metadata?.phone_call?.external_number || '';\n  telefon = callerIdRaw.replace(/^\\+40/, '0').replace(/\\D/g, '');\n}\n\ntelefon = telefon.toString().replace(/\\D/g, '');\nif (telefon.startsWith('40') && telefon.length === 11) telefon = '0' + telefon.slice(2);\nelse if (telefon.startsWith('+40')) telefon = '0' + telefon.slice(3);\nelse if (!telefon.startsWith('0') && telefon.length === 9) telefon = '0' + telefon;\n\nreturn {\n  json: { tipRaspuns, telefon, dataNou, oraNou }\n};"
+      },
+      "id": "a2090804-e623-47c1-bace-ee92d106c19c",
+      "name": "Code - Analizeaza Raspuns Confirmare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5024,
+        -6976
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "STATUS": "VALID",
+            "TELEFON": "={{ $json.telefon }}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "NUME",
+              "displayName": "NUME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SERVICIU",
+              "displayName": "SERVICIU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DATA PROGRAMARII",
+              "displayName": "DATA PROGRAMARII",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ORA",
+              "displayName": "ORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SMS_TRIMIS",
+              "displayName": "SMS_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "APEL_TRIMIS",
+              "displayName": "APEL_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "08f8f635-b3a8-4464-9c92-6f721204ceaf",
+      "name": "Sheets - STATUS = VALID (Apel)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5616,
+        -6992
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-reprog",
+              "leftValue": "={{ $json.tipRaspuns }}",
+              "rightValue": "reprogramare",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c4b01e4a-2a20-421f-b787-39e2612755a8",
+      "name": "IF - Reprogramare sau Anulare?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5616,
+        -6800
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "DATA PROGRAMARII": "={{ $json.dataNou }}",
+            "ORA": "={{ $json.oraNou }}",
+            "STATUS": "VALID",
+            "TELEFON": "={{ $json.telefon }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DATA PROGRAMARII",
+              "displayName": "DATA PROGRAMARII",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ORA",
+              "displayName": "ORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "39a55c8e-7f27-4146-aa18-93226d92b5bb",
+      "name": "Sheets - Actualizeaza Data si Ora (Reprogramare)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        6064,
+        -7008
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "STATUS": "INVALID",
+            "TELEFON": "={{ $json.telefon }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "92358a3f-e4f2-43ba-bb3f-9ffd40793bad",
+      "name": "Sheets - STATUS = INVALID (Anulare)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        6064,
+        -6816
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "NO SHOW TRACKING",
+          "mode": "list",
+          "cachedResultName": "NO SHOW TRACKING"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "e6e0ea46-bdff-4b57-8ff1-bc9044da7a61",
+      "name": "Sheets - Copiaza in NO SHOW TRACKING (Anulare)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        6368,
+        -6816
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-reprog",
+              "leftValue": "={{ $json.tipRaspuns }}",
+              "rightValue": "reprogramare",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "169cf5c4-6cda-41b8-89fa-21686f462adb",
+      "name": "IF - Reprogramare sau Invalid? (Follow Up)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5312,
+        -6016
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "DATA PROGRAMARII": "={{ $json.dataNou }}",
+            "ORA": "={{ $json.oraNou }}",
+            "STATUS": "",
+            "SMS_TRIMIS": "",
+            "APEL_TRIMIS": "",
+            "TELEFON": "={{ $json.telefon }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DATA PROGRAMARII",
+              "displayName": "DATA PROGRAMARII",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ORA",
+              "displayName": "ORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SMS_TRIMIS",
+              "displayName": "SMS_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "APEL_TRIMIS",
+              "displayName": "APEL_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "607b9911-abfd-43d2-8b43-ae653e473d60",
+      "name": "Sheets - Actualizeaza Programare (Follow Up)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5600,
+        -6032
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "NO SHOW TRACKING",
+          "mode": "list",
+          "cachedResultName": "NO SHOW TRACKING"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "STATUS": "REPROGRAMAT",
+            "TELEFON": "={{ $json.telefon }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "5b6ff35c-32fd-4fd2-9ff2-0946f5797203",
+      "name": "Sheets - STATUS = REPROGRAMAT (No Show)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5920,
+        -6032
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 12 * * *"
+            }
+          ]
+        }
+      },
+      "id": "f39da732-fb7e-42f8-8c33-044443323233",
+      "name": "Cron 12:00 - Trimite SMS1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        4752,
+        -7728
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\nconst mesaj = `Buna ziua, ${item.NUME}, aveti programare maine ${item['DATA PROGRAMARII']} la ora ${item.ORA}.\\nConfirmati prezenta aici: https://andreidamian.app.n8n.cloud/webhook/confirmare?tel=${item.TELEFON}`;\n\nreturn [{\n  json: {\n    ...item,\n    mesaj_sms: mesaj\n  }\n}];"
+      },
+      "id": "ad88d465-b376-4d22-a784-552a7aacee4c",
+      "name": "Code - Prepara Mesaj SMS1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5584,
+        -7728
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html><html lang='ro'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Confirmare</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#e8f5e9;display:flex;justify-content:center;align-items:center;min-height:100vh}.card{background:white;border-radius:24px;padding:56px 48px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.1);max-width:480px;width:90%}.icon{font-size:88px;margin-bottom:28px}.title{color:#1b5e20;font-size:32px;font-weight:800;margin-bottom:16px}.msg{color:#6b7280;font-size:15px;line-height:1.8}</style></head><body><div class='card'><div class='icon'>✅</div><h1 class='title'>ATI CONFIRMAT CU SUCCES!</h1><p class='msg'>Va multumim! Va asteptam cu drag la programare!</p></div></body></html>",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "60868510-d180-400b-a138-7b3e0e8f0257",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        5584,
+        -7520
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-confirmare",
+              "leftValue": "={{ $json.tipRaspuns }}",
+              "rightValue": "confirmare",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0509e92c-464f-44da-ba6a-81a42530a1a7",
+      "name": "IF - Confirmare?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5296,
+        -6976
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/30 9-18 * * *"
+            }
+          ]
+        }
+      },
+      "id": "9f2c7eae-33c3-47b0-89e3-e1cb30b691f3",
+      "name": "Cron 09-18 la 30min - Follow Up1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        4672,
+        -6208
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "NO SHOW TRACKING",
+          "mode": "list",
+          "cachedResultName": "NO SHOW TRACKING"
+        },
+        "options": {}
+      },
+      "id": "5f2351f7-96fd-45e1-9e87-3282993381eb",
+      "name": "Sheets - Citeste NO SHOW TRACKING1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5056,
+        -6208
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\nconst acum = $now;\nconst dataAzi = acum.toFormat('dd.MM.yyyy');\n\nif (item.DATA !== dataAzi) return [];\n\nconst status = (item.STATUS || '').trim();\nif (status !== '') return [];\n\nconst [h, m] = item.ORA.split(':').map(Number);\nconst oraApel = acum.startOf('day').plus({ hours: h, minutes: m + 10 });\n\nconst start = acum.minus({ minutes: 30 });\nconst end = acum;\n\nif (oraApel < start || oraApel > end) return [];\n\nlet telefon = item.TELEFON.toString().replace(/\\D/g, '');\nif (telefon.startsWith('0')) {\n  telefon = '+4' + telefon;\n} else if (!telefon.startsWith('+')) {\n  telefon = '+40' + telefon;\n}\n\nreturn {\n  json: {\n    ...item,\n    telefon_formatat: telefon,\n    nume: item.NUME,\n    data_programarii: item.DATA,\n    ora_programarii: item.ORA,\n    serviciu: item.SERVICIU || ''\n  }\n};"
+      },
+      "id": "f004ea05-a540-43c2-8773-c9513817c3a9",
+      "name": "Code - Filtreaza si Pregateste Follow Up1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5312,
+        -6208
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/convai/batch-calling/submit",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": "33460cbd79001c6e2ebd1604ca3f6c9d692f647748eb1003a6a4706936afaca0"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"call_name\": \"Follow Up No Show\",\n  \"agent_id\": \"agent_6801kfdt3d4bf09shg6q55weq2ng\",\n  \"agent_phone_number_id\": \"phnum_6701kf5ztkj6efna4kx3j7sd9937\",\n  \"recipients\": [\n    {\n      \"phone_number\": \"={{ $json.telefon_formatat }}\",\n      \"conversation_initiation_client_data\": {\n        \"dynamic_variables\": {\n          \"nume\": \"={{ $json.nume }}\",\n          \"data\": \"={{ $json.data_programarii }}\",\n          \"ora\": \"={{ $json.ora_programarii }}\",\n          \"tip_apel\": \"follow_up\"\n        }\n      }\n    }\n  ],\n  \"conversation_config_override\": {\n    \"agent\": {\n      \"first_message\": \"Buna ziua, {{ $json.nume }}! Va sunam de la clinica. Am observat ca nu ati putut ajunge la programarea de astazi. Doriti sa reprogramam pe o alta data?\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "id": "a90eeec4-0989-4def-b605-33fa191f9c87",
+      "name": "ElevenLabs - Apel Follow Up1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5616,
+        -6208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "NO SHOW TRACKING",
+          "mode": "list",
+          "cachedResultName": "NO SHOW TRACKING"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "STATUS": "APEL_FOLLOWUP_TRIMIS",
+            "TELEFON": "={{ $json.TELEFON }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "60d37f49-ac66-4797-8877-f50bffc9ab98",
+      "name": "Sheets - STATUS = APEL_FOLLOWUP_TRIMIS1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5920,
+        -6208
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "elevenlabs-webhook-followup",
+        "options": {}
+      },
+      "id": "3d63449d-07bd-4449-bbe4-e7ed6ddefea1",
+      "name": "Webhook - ElevenLabs Follow Up1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        4672,
+        -6016
+      ],
+      "webhookId": "12c59ec4-6781-42fa-b246-6b04d82f2ef0"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nlet telefon = '';\nlet tipRaspuns = 'invalid';\nlet dataNou = '';\nlet oraNou = '';\n\nif (body.data && body.data.transcript) {\n  const transcript = body.data.transcript || [];\n  const userMessages = transcript\n    .filter(msg => msg.role === 'user')\n    .map(msg => msg.message)\n    .join(' ').toLowerCase();\n\n  const vreaReprogramare = userMessages.includes('da') ||\n                           userMessages.includes('reprogramez') ||\n                           userMessages.includes('alta zi') ||\n                           userMessages.includes('vreau');\n\n  const refuzaReprogramare = userMessages.includes('nu') ||\n                              userMessages.includes('nu mai vreau') ||\n                              userMessages.includes('renunt');\n\n  if (vreaReprogramare && !refuzaReprogramare) tipRaspuns = 'reprogramare';\n  else tipRaspuns = 'invalid';\n\n  const vars = body.data?.collected_data || {};\n  dataNou = vars.data_noua || '';\n  oraNou = vars.ora_noua || '';\n\n  const callerIdRaw = body.data?.metadata?.phone_call?.external_number || '';\n  telefon = callerIdRaw.replace(/^\\+40/, '0').replace(/\\D/g, '');\n}\n\ntelefon = telefon.toString().replace(/\\D/g, '');\nif (telefon.startsWith('40') && telefon.length === 11) telefon = '0' + telefon.slice(2);\nelse if (telefon.startsWith('+40')) telefon = '0' + telefon.slice(3);\nelse if (!telefon.startsWith('0') && telefon.length === 9) telefon = '0' + telefon;\n\nreturn {\n  json: { tipRaspuns, telefon, dataNou, oraNou }\n};"
+      },
+      "id": "074350a0-84f7-4b63-819a-dcee4497bdf5",
+      "name": "Code - Analizeaza Raspuns Follow Up1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5040,
+        -6016
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "NO SHOW TRACKING",
+          "mode": "list",
+          "cachedResultName": "NO SHOW TRACKING"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "STATUS": "INVALID",
+            "TELEFON": "={{ $json.telefon }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b038d6f0-e455-405c-8776-b797360904f2",
+      "name": "Sheets - STATUS = INVALID (No Show Final)1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5808,
+        -5792
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "verifica-disponibilitate",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "08d93625-454b-40d3-bb4b-625a2463ae95",
+      "name": "Webhook - Verifica Disponibilitate",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        4656,
+        -5472
+      ],
+      "webhookId": "verifica-disponibilitate"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst data = body.data || '';\nconst ora = body.ora || '';\n\nconst [zi, luna, an] = data.split('.');\nconst [h, m] = ora.split(':');\n\nconst start = new Date(parseInt(an), parseInt(luna)-1, parseInt(zi), parseInt(h), parseInt(m));\nconst end = new Date(start.getTime() + 60 * 60 * 1000);\n\nconst oraStart = parseInt(h);\nif (oraStart < 9 || oraStart >= 18) {\n  return { json: { disponibil: false, motiv: 'In afara programului. Programul este intre 09:00 si 18:00.' } };\n}\n\nreturn {\n  json: {\n    disponibil: null,\n    start_iso: start.toISOString(),\n    end_iso: end.toISOString(),\n    data,\n    ora\n  }\n};"
+      },
+      "id": "a53c64f5-9773-4f6b-a175-ef5f33b31521",
+      "name": "Code - Verifica Interval Program",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4864,
+        -5472
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-program",
+              "leftValue": "={{ $json.disponibil }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "36ca09f7-7471-4fe6-bac7-d9718ce62cee",
+      "name": "IF - In afara programului?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5104,
+        -5472
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ disponibil: false, motiv: $json.motiv }) }}",
+        "options": {}
+      },
+      "id": "dd77f93d-88fe-407c-b930-a84e15b0ba89",
+      "name": "Respond - In afara programului",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        5360,
+        -5664
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "andrei.d.damian@gmail.com",
+          "mode": "list",
+          "cachedResultName": "andrei.d.damian@gmail.com"
+        },
+        "options": {}
+      },
+      "id": "05274f91-dc7e-448e-966e-2c937b39637c",
+      "name": "Google Calendar - Verifica Slot",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        5360,
+        -5456
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lycv3YTeq3qLvGqc",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const events = $input.all();\nconst startIso = $('Code - Verifica Interval Program').first().json.start_iso;\nconst endIso = $('Code - Verifica Interval Program').first().json.end_iso;\n\nconst areEvents = events.some(e => e.json && e.json.id);\n\nreturn {\n  json: {\n    disponibil: !areEvents,\n    motiv: areEvents ? 'Ora selectata este deja ocupata. Va rugam alegeti alta ora.' : 'Ora este disponibila.',\n    start_iso: startIso,\n    end_iso: endIso\n  }\n};"
+      },
+      "id": "b78c5d6f-627b-4883-a051-6195039236ee",
+      "name": "Code - Evalueaza Slot",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5600,
+        -5456
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ disponibil: $json.disponibil, motiv: $json.motiv }) }}",
+        "options": {}
+      },
+      "id": "0208906e-5b97-4bbe-bc47-cd0113c14d81",
+      "name": "Respond - Disponibilitate",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        5856,
+        -5456
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reprogrameaza",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "9bc17def-3083-422a-aaa6-e1c9f65d83b6",
+      "name": "Webhook - Reprogrameaza",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        4656,
+        -5088
+      ],
+      "webhookId": "reprogrameaza"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst telefon = body.telefon || '';\nconst dataNoua = body.data_noua || '';\nconst oraNoua = body.ora_noua || '';\n\nconst [zi, luna, an] = dataNoua.split('.');\nconst [h, m] = oraNoua.split(':');\n\nconst start = new Date(parseInt(an), parseInt(luna)-1, parseInt(zi), parseInt(h), parseInt(m));\nconst end = new Date(start.getTime() + 60 * 60 * 1000);\n\nlet telefonCurat = telefon.toString().replace(/\\D/g, '');\nif (telefonCurat.startsWith('40')) telefonCurat = '0' + telefonCurat.slice(2);\nelse if (telefonCurat.startsWith('+40')) telefonCurat = '0' + telefonCurat.slice(3);\n\nreturn {\n  json: {\n    telefon: telefonCurat,\n    data_noua: dataNoua,\n    ora_noua: oraNoua,\n    start_iso: start.toISOString(),\n    end_iso: end.toISOString()\n  }\n};"
+      },
+      "id": "de238649-28b2-4c16-a39f-9b4e03499e86",
+      "name": "Code - Pregateste Reprogramare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4896,
+        -5088
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "TELEFON",
+              "lookupValue": "={{ $json.telefon }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d0215648-1c72-4bed-8e7e-04ed0e4bf61a",
+      "name": "Sheets - Gaseste Client Reprogramare",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5152,
+        -5088
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const client = $input.first().json;\nconst reprog = $('Code - Pregateste Reprogramare').first().json;\n\nconst titlu = `${client.NUME} - Programare`;\n\nreturn {\n  json: {\n    ...reprog,\n    nume: client.NUME,\n    titlu_calendar: titlu,\n    data_veche: client['DATA PROGRAMARII'],\n    ora_veche: client.ORA\n  }\n};"
+      },
+      "id": "bdf24eb8-4b0d-4cc9-9473-6ef5136b6ede",
+      "name": "Code - Merge Date Reprogramare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5392,
+        -5088
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "andrei.d.damian@gmail.com",
+          "mode": "list",
+          "cachedResultName": "andrei.d.damian@gmail.com"
+        },
+        "options": {}
+      },
+      "id": "131f928a-fc8e-4521-a169-1f6d6ab30a0e",
+      "name": "Google Calendar - Gaseste Eveniment Vechi",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        5616,
+        -5088
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lycv3YTeq3qLvGqc",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "andrei.d.damian@gmail.com",
+          "mode": "list",
+          "cachedResultName": "andrei.d.damian@gmail.com"
+        },
+        "eventId": "={{ $json.id }}",
+        "updateFields": {
+          "end": "={{ $('Code - Merge Date Reprogramare').first().json.end_iso }}",
+          "start": "={{ $('Code - Merge Date Reprogramare').first().json.start_iso }}",
+          "summary": "={{ $('Code - Merge Date Reprogramare').first().json.titlu_calendar }}"
+        }
+      },
+      "id": "8ce24df6-5225-4d54-97e0-9e8a1a75a10d",
+      "name": "Google Calendar - Actualizeaza Eveniment",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        5856,
+        -5088
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lycv3YTeq3qLvGqc",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TELEFON": "={{ $('Code - Pregateste Reprogramare').first().json.telefon }}",
+            "DATA PROGRAMARII": "={{ $('Code - Pregateste Reprogramare').first().json.data_noua }}",
+            "ORA": "={{ $('Code - Pregateste Reprogramare').first().json.ora_noua }}",
+            "SMS_TRIMIS": "",
+            "APEL_TRIMIS": "",
+            "STATUS": ""
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DATA PROGRAMARII",
+              "displayName": "DATA PROGRAMARII",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ORA",
+              "displayName": "ORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SMS_TRIMIS",
+              "displayName": "SMS_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "APEL_TRIMIS",
+              "displayName": "APEL_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "2c796f3f-e8af-4436-b229-c604afe3ff32",
+      "name": "Sheets - Actualizeaza Reprogramare",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        6096,
+        -5088
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"mesaj\": \"Programare actualizata\" }",
+        "options": {}
+      },
+      "id": "7bf5f655-31c3-45b3-ba6d-07842ca034e6",
+      "name": "Respond - Reprogramare Confirmata",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        6368,
+        -5088
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "anuleaza-programare",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "19d80483-ef1c-4f9b-bd0c-5f6eb4c211fe",
+      "name": "Webhook - Anuleaza Programare",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        4656,
+        -4896
+      ],
+      "webhookId": "anuleaza-programare"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nlet telefon = body.telefon || '';\ntelefon = telefon.toString().replace(/\\D/g, '');\nif (telefon.startsWith('40') && telefon.length === 11) telefon = '0' + telefon.slice(2);\nelse if (telefon.startsWith('+40')) telefon = '0' + telefon.slice(3);\nelse if (!telefon.startsWith('0') && telefon.length === 9) telefon = '0' + telefon;\n\nreturn { json: { telefon } };"
+      },
+      "id": "9d0ba69e-ef6d-45e5-9ac4-26b7c870179f",
+      "name": "Code - Pregateste Anulare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4896,
+        -4896
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "TELEFON",
+              "lookupValue": "={{ $json.telefon }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d2011914-2e60-47ee-8489-b6bcc3f93090",
+      "name": "Sheets - Gaseste Client Anulare",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5152,
+        -4896
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "andrei.d.damian@gmail.com",
+          "mode": "list",
+          "cachedResultName": "andrei.d.damian@gmail.com"
+        },
+        "options": {}
+      },
+      "id": "2d52aca3-ee8b-464c-ae4f-a85b82e12327",
+      "name": "Google Calendar - Gaseste Eveniment Anulare",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        5392,
+        -4896
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lycv3YTeq3qLvGqc",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "andrei.d.damian@gmail.com",
+          "mode": "list",
+          "cachedResultName": "andrei.d.damian@gmail.com"
+        },
+        "eventId": "={{ $json.id }}",
+        "options": {}
+      },
+      "id": "93fbb3c1-7c3a-4629-9aae-15eaf4f9c700",
+      "name": "Google Calendar - Sterge Eveniment",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        5616,
+        -4896
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lycv3YTeq3qLvGqc",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "toDelete": {
+          "rows": [
+            {
+              "rowIndex": "={{ $('Sheets - Gaseste Client Anulare').first().json.row_number }}"
+            }
+          ]
+        }
+      },
+      "id": "140b5dec-63e1-49ec-98cb-ebb7fb504b5f",
+      "name": "Sheets - Sterge Rand",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5856,
+        -4896
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"mesaj\": \"Programarea a fost anulata\" }",
+        "options": {}
+      },
+      "id": "8624c7ff-87d6-412c-8a23-547a04db9760",
+      "name": "Respond - Anulare Confirmata",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        6096,
+        -4896
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-sms",
+              "leftValue": "={{ $json['SMS_TRIMIS'] }}",
+              "rightValue": "TRIMIS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "cond-status",
+              "leftValue": "={{ $json['STATUS'] }}",
+              "rightValue": "VALID",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9e74cd4d-b64d-4b35-91f2-fb5aaa8de4a1",
+      "name": "IF - SMS Trimis + Status NOT VALID",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5344,
+        -6464
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const raw = item.json;\n\n  let telefon = String(raw.TELEFON || '').replace(/\\D/g, '');\n  if (telefon.startsWith('40')) telefon = '0' + telefon.slice(2);\n  if (!telefon.startsWith('0')) telefon = '0' + telefon;\n\n  return {\n    json: {\n      NUME:               raw.NUME                || '',\n      TELEFON:            telefon,\n      SERVICIU:           raw.SERVICIU            || '',\n      'DATA PROGRAMARII': raw['DATA PROGRAMARII'] || '',\n      ORA:                raw.ORA                 || ''\n    }\n  };\n});"
+      },
+      "id": "26dd6224-5a64-476d-a3a7-7bceeb7e2b0d",
+      "name": "Code - Pregateste Date NO SHOW",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5616,
+        -6480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const preparat = $('Code - Pregateste Date NO SHOW').all();\n\nreturn preparat.map(item => ({\n  json: {\n    NUME:               item.json.NUME               || '',\n    TELEFON:            item.json.TELEFON             || '',\n    SERVICIU:           item.json.SERVICIU            || '',\n    'DATA PROGRAMARII': item.json['DATA PROGRAMARII'] || '',\n    ORA:                item.json.ORA                 || ''\n  }\n}));"
+      },
+      "id": "8807df72-fbb0-424b-be04-6634c6bc07e6",
+      "name": "Code - Recupereaza Date pentru NOSHOW",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6160,
+        -6480
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "59 23 * * *"
+            }
+          ]
+        }
+      },
+      "id": "392b5f4b-c8ed-4f36-87d5-71ac402b0fe9",
+      "name": "Cron 23:59 - Expirare1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        4720,
+        -6464
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "options": {}
+      },
+      "id": "8a2b3e9a-f4b5-4ae3-aab4-1cfb454d43b8",
+      "name": "Sheets - Citeste Programari1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5024,
+        -6464
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "STATUS": "INVALID",
+            "TELEFON": "={{ $json.TELEFON }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d9ae97e8-59d1-45e2-b698-b75fa2b6e7e4",
+      "name": "Sheets - STATUS = INVALID1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5872,
+        -6480
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1737813251,
+          "mode": "list",
+          "cachedResultName": "NO SHOW TRACKING",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE/edit#gid=1737813251"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NUME": "={{ $json.NUME }}",
+            "TELEFON": "={{ $json.TELEFON }}",
+            "SERVICIU": "={{ $json.SERVICIU }}",
+            "DATA PROGRAMARII": "={{ $json['DATA PROGRAMARII'] }}",
+            "ORA": "={{ $json.ORA }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "NUME",
+              "displayName": "NUME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SERVICIU",
+              "displayName": "SERVICIU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DATA PROGRAMARII",
+              "displayName": "DATA PROGRAMARII",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ORA",
+              "displayName": "ORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1eeeb75d-4261-40fa-a5c6-1e55505715d1",
+      "name": "Sheets - Copiaza in NO SHOW TRACKING1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        6480,
+        -6480
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "programeaza",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "52339e90-fdbd-4e9c-8c58-dc42bb8bf5ca",
+      "name": "Webhook - Programeaza1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        4656,
+        -5280
+      ],
+      "webhookId": "programeaza"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst nume = body.nume || '';\nconst telefon = body.telefon || '';\nconst dataRaw = body.data || '';\nconst oraRaw = body.ora || '12:00';\n\n// === PARSARE DATA ROBUSTA ===\nfunction parseData(dataStr) {\n  const lower = dataStr.toLowerCase().trim();\n\n  // Text natural - verificam INTAI textul, inainte de formate cu puncte/liniute\n  const now = new Date();\n  // Folosim ora Romaniei (UTC+2 / UTC+3)\n  const nowRO = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Bucharest' }));\n\n  if (lower === 'maine' || lower === 'mâine') {\n    const d = new Date(nowRO);\n    d.setDate(d.getDate() + 1);\n    return d;\n  }\n\n  if (lower === 'azi' || lower === 'astazi' || lower === 'astăzi') {\n    return nowRO;\n  }\n\n  // Zile saptamana viitoare (ex: \"joi viitoare\") - verificam INTAI\n  const zileSaptViitoare = {\n    'luni viitoare': 1,\n    'marti viitoare': 2, 'marți viitoare': 2,\n    'miercuri viitoare': 3,\n    'joi viitoare': 4,\n    'vineri viitoare': 5,\n    'sambata viitoare': 6, 'sâmbătă viitoare': 6, 'sâmbăta viitoare': 6\n  };\n\n  if (zileSaptViitoare[lower] !== undefined) {\n    const target = zileSaptViitoare[lower];\n    const d = new Date(nowRO);\n    const ziAzi = d.getDay() === 0 ? 7 : d.getDay(); // 1=luni...7=duminica\n    let diff = target - ziAzi;\n    if (diff <= 0) diff += 7; // urmatoarea saptamana curenta\n    diff += 7;                 // + inca o saptamana = saptamana viitoare\n    d.setDate(d.getDate() + diff);\n    return d;\n  }\n\n  // Zile saptamana curenta/urmatoare (ex: \"joi\", \"luni\")\n  const zile = {\n    'luni': 1,\n    'marti': 2, 'marți': 2,\n    'miercuri': 3,\n    'joi': 4,\n    'vineri': 5,\n    'sambata': 6, 'sâmbătă': 6, 'sâmbăta': 6\n  };\n\n  if (zile[lower] !== undefined) {\n    const target = zile[lower];\n    const d = new Date(nowRO);\n    // Convertim getDay() (0=dum, 1=lun...) la (1=lun...7=dum)\n    const ziAzi = d.getDay() === 0 ? 7 : d.getDay();\n    let diff = target - ziAzi;\n    if (diff <= 0) diff += 7; // daca ziua a trecut sau e azi, mergi la saptamana viitoare\n    d.setDate(d.getDate() + diff);\n    return d;\n  }\n\n  // Format dd.MM.yyyy\n  if (dataStr.includes('.')) {\n    const parts = dataStr.split('.');\n    if (parts.length === 3) {\n      const z = parseInt(parts[0]), l = parseInt(parts[1]), a = parseInt(parts[2]);\n      if (!isNaN(z) && !isNaN(l) && !isNaN(a) && a > 100) {\n        return new Date(a, l - 1, z);\n      }\n    }\n  }\n\n  // Format yyyy-MM-dd\n  if (dataStr.includes('-') && dataStr.length >= 10) {\n    const parts = dataStr.split('-');\n    if (parts.length === 3) {\n      const a = parseInt(parts[0]), l = parseInt(parts[1]), z = parseInt(parts[2]);\n      if (!isNaN(z) && !isNaN(l) && !isNaN(a) && a > 100) {\n        return new Date(a, l - 1, z);\n      }\n    }\n  }\n\n  return null;\n}\n\nconst dataParsed = parseData(dataRaw);\n\nif (!dataParsed || isNaN(dataParsed.getTime())) {\n  return { json: { error: true, mesaj: 'Nu am putut intelege data: ' + dataRaw + '. Va rog specificati din nou (ex: joi, 2 aprilie, sau 02.04.2026).' } };\n}\n\n// Formateaza data ca dd.MM.yyyy pentru Sheet\nconst zi = String(dataParsed.getDate()).padStart(2, '0');\nconst luna = String(dataParsed.getMonth() + 1).padStart(2, '0');\nconst an = dataParsed.getFullYear();\nconst dataFormatata = `${zi}.${luna}.${an}`;\n\n// Parseaza ora\nconst [h, m] = oraRaw.split(':').map(Number);\nconst oraH = isNaN(h) ? 12 : h;\nconst oraM = isNaN(m) ? 0 : m;\n\nconst start = new Date(an, dataParsed.getMonth(), dataParsed.getDate(), oraH, oraM);\nconst end = new Date(start.getTime() + 60 * 60 * 1000);\n\n// Normalizeaza telefon\nlet telefonCurat = telefon.toString().replace(/\\D/g, '');\nif (telefonCurat.startsWith('0')) telefonCurat = '+4' + telefonCurat;\nelse if (!telefonCurat.startsWith('+')) telefonCurat = '+40' + telefonCurat;\n\nreturn {\n  json: {\n    nume,\n    telefon,\n    telefon_curat: telefonCurat,\n    serviciu: 'consult',\n    data: dataFormatata,\n    ora: oraRaw,\n    start_iso: start.toISOString(),\n    end_iso: end.toISOString(),\n    titlu_calendar: `${nume} - Programare`,\n    // debug - poti sterge dupa ce verifici ca merge\n    debug_dataRaw: dataRaw,\n    debug_dataCalculata: dataFormatata\n  }\n};"
+      },
+      "id": "20822301-c40d-4882-b6e0-ca3bd1b8d81e",
+      "name": "Code - Pregateste Programare1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4896,
+        -5280
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NUME": "={{ $json.nume }}",
+            "TELEFON": "={{ $json.telefon }}",
+            "SERVICIU": "={{ $json.serviciu }}",
+            "DATA PROGRAMARII": "={{ $json.data }}",
+            "ORA": "={{ $json.ora }}",
+            "SMS_TRIMIS": "",
+            "APEL_TRIMIS": "",
+            "STATUS": ""
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "96f38912-277f-466f-b2cc-d02957cd8264",
+      "name": "Sheets - Adauga Programare1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5136,
+        -5280
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "andrei.d.damian@gmail.com",
+          "mode": "list",
+          "cachedResultName": "andrei.d.damian@gmail.com"
+        },
+        "start": "={{ $('Code - Pregateste Programare1').first().json.start_iso }}",
+        "end": "={{ $('Code - Pregateste Programare1').first().json.end_iso }}",
+        "additionalFields": {
+          "description": "={{ $('Code - Pregateste Programare1').first().json.telefon }}",
+          "summary": "={{ $('Code - Pregateste Programare1').first().json.titlu_calendar }}"
+        }
+      },
+      "id": "0c7b9b60-08e0-4edb-99c6-da08d6f13213",
+      "name": "Google Calendar - Adauga Eveniment1",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        5376,
+        -5280
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lycv3YTeq3qLvGqc",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TELEFON": "={{ $('Code - Pregateste Programare1').first().json.telefon }}",
+            "STATUS": "PROGRAMAT"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "27201575-8737-4968-a373-50fd9bbc64d9",
+      "name": "Sheets - STATUS = PROGRAMAT1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5632,
+        -5280
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.error ? JSON.stringify({ success: false, mesaj: $json.mesaj }) : JSON.stringify({ success: true, mesaj: 'Programare confirmata pentru ' + $('Code - Pregateste Programare1').first().json.data + ' la ora ' + $('Code - Pregateste Programare1').first().json.ora }) }}",
+        "options": {}
+      },
+      "id": "a7021bd0-314b-4c78-aeba-bcddbea5f76b",
+      "name": "Respond - Programare Confirmata1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        5872,
+        -5280
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-data",
+              "leftValue": "={{ $json['DATA PROGRAMARII'] }}",
+              "rightValue": "={{ $now.plus(1, 'day').toFormat('dd.MM.yyyy') }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "cond-sms-trimis",
+              "leftValue": "={{ $json['SMS_TRIMIS'] }}",
+              "rightValue": "TRIMIS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "cond-status-not-valid",
+              "leftValue": "={{ $json['STATUS'] }}",
+              "rightValue": "VALID",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "cond-status-not-invalid",
+              "leftValue": "={{ $json['STATUS'] }}",
+              "rightValue": "INVALID",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8a7f71a9-2f8c-433b-9c6f-6d53b8eaccb6",
+      "name": "IF - SMS Trimis + Status Gol sau PROGRAMAT",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5280,
+        -7200
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 12 * * *"
+            }
+          ]
+        }
+      },
+      "id": "1d706ac9-4961-4475-b654-66c8368d71ad",
+      "name": "Cron 12:30 - Declanseaza Apel",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        4752,
+        -7200
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "options": {}
+      },
+      "id": "3b2e2e0c-d6f7-4ad7-84d2-40527e2785d7",
+      "name": "Sheets - Citeste Programari Apel1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        4992,
+        -7200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\nlet telefon = item.TELEFON.toString().replace(/\\D/g, '');\nif (telefon.startsWith('0')) {\n  telefon = '+4' + telefon;\n} else if (!telefon.startsWith('+')) {\n  telefon = '+40' + telefon;\n}\n\nreturn {\n  json: {\n    ...item,\n    telefon_formatat: telefon,\n    nume: item.NUME,\n    data_programarii: item['DATA PROGRAMARII'],\n    ora_programarii: item.ORA,\n    serviciu: item.SERVICIU\n  }\n};"
+      },
+      "id": "aab4ae96-9c45-49d9-bd8e-a4caf1791a9d",
+      "name": "Code - Pregateste Date Apel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5584,
+        -7216
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/convai/batch-calling/submit",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": "33460cbd79001c6e2ebd1604ca3f6c9d692f647748eb1003a6a4706936afaca0"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"call_name\": \"Confirmare programare\",\n  \"agent_id\": \"agent_6801kfdt3d4bf09shg6q55weq2ng\",\n  \"agent_phone_number_id\": \"phnum_6701kf5ztkj6efna4kx3j7sd9937\",\n  \"recipients\": [\n    {\n      \"phone_number\": \"={{ $json.telefon_formatat }}\",\n      \"conversation_initiation_client_data\": {\n        \"dynamic_variables\": {\n          \"nume\": \"={{ $json.nume }}\",\n          \"data\": \"={{ $json.data_programarii }}\",\n          \"ora\": \"={{ $json.ora_programarii }}\",\n          \"serviciu\": \"={{ $json.serviciu }}\",\n          \"tip_apel\": \"confirmare\"\n        }\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "0f5f2ce3-b36a-46a2-b83e-a42705927611",
+      "name": "ElevenLabs - Initiaza Apel Confirmare1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5856,
+        -7216
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "APEL_TRIMIS": "TRIMIS",
+            "TELEFON": "={{ $('Code - Pregateste Date Apel').first().json.TELEFON }}"
+          },
+          "matchingColumns": [
+            "TELEFON"
+          ],
+          "schema": [
+            {
+              "id": "TELEFON",
+              "displayName": "TELEFON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "APEL_TRIMIS",
+              "displayName": "APEL_TRIMIS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "3f681b44-71db-4805-a001-77d64d3e22fa",
+      "name": "Sheets - APEL_TRIMIS = TRIMIS1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        6160,
+        -7216
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "context-apel-inbound",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8cd0f6f8-e67f-4aeb-80d0-d312e0366923",
+      "name": "Webhook - Context Apel Inbound1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        4704,
+        -6640
+      ],
+      "webhookId": "context-apel-inbound"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\n// ElevenLabs trimite caller_id, nu telefon sau phone_number\nlet telefon = body.caller_id || body.telefon || body.phone_number || '';\n\ntelefon = telefon.toString().replace(/\\D/g, '');\n\nif (telefon.startsWith('40') && telefon.length === 11) {\n  telefon = '0' + telefon.slice(2);\n} else if (telefon.startsWith('4') && telefon.length === 10) {\n  telefon = '0' + telefon.slice(1);\n} else if (!telefon.startsWith('0') && telefon.length === 9) {\n  telefon = '0' + telefon;\n}\n\nreturn { json: { telefon } };"
+      },
+      "id": "af10846d-5553-4762-bccb-9a0a5474bc09",
+      "name": "Code - Extrage Telefon Inbound1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5024,
+        -6640
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-5XoSfyzrFgW1-t-xeN63C-yCzxaNXhVIJTJTUFNTWE",
+          "mode": "list",
+          "cachedResultName": "clinica"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PROGRAMARI"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "TELEFON",
+              "lookupValue": "={{ $json.telefon }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ac53294b-cb6a-44e3-9605-fe05c0e989f3",
+      "name": "Sheets - Gaseste Client Inbound1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        5344,
+        -6640
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kNw8XERi8nYRHXjy",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const client = $input.first().json;\n\nconst telefon = (client.TELEFON || '').toString().trim();\nconst nume = (client.NUME || '').trim();\nconst data = (client['DATA PROGRAMARII'] || '').trim();\nconst ora = (client.ORA || '').trim();\nconst status = (client.STATUS || '').trim();\nconst smsTrimis = (client.SMS_TRIMIS || '').trim();\nconst apelTrimis = (client.APEL_TRIMIS || '').trim();\n\nlet tipContext = '';\nlet firstMessage = '';\n\n// PRIORITATE 1: SMS sau APEL trimis si inca neconfirmat = REAMINTIRE\nif ((smsTrimis === 'TRIMIS' || apelTrimis === 'TRIMIS') && status !== 'VALID' && status !== 'INVALID') {\n  tipContext = 'confirmare';\n  firstMessage = 'Buna ziua, ' + nume + '! Va sunam de la clinica X. Maine la ora ' + ora + ' aveti programare. Confirmati ca veniti?';\n\n// PRIORITATE 2: Deja confirmat\n} else if (status === 'VALID') {\n  tipContext = 'confirmat';\n  firstMessage = 'Buna ziua, ' + nume + '! Programarea dumneavoastra de maine la ora ' + ora + ' este deja confirmata. Cu ce va mai putem ajuta?';\n\n// PRIORITATE 3: Nu are programare\n} else {\n  tipContext = 'fara_programare';\n  firstMessage = 'Buna ziua! Clinica X, cu ce va putem ajuta?';\n}\n\nreturn {\n  json: {\n    tipContext,\n    firstMessage,\n    nume,\n    telefon,\n    data,\n    ora,\n    status,\n    smsTrimis,\n    apelTrimis\n  }\n};"
+      },
+      "id": "21436f83-d13d-4fc6-8834-dbd1291ee1a1",
+      "name": "Code - Determina Context1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5600,
+        -6640
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "b36de3f0-f41d-4e55-9745-13bc00e42cbf",
+      "name": "Respond - Context Inbound1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        6128,
+        -6640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\n// Formatul EXACT cerut de ElevenLabs pentru Conversation Initiation Webhook\nconst raspuns = {\n  type: 'conversation_initiation_client_data',\n  dynamic_variables: {\n    tipContext: item.tipContext,\n    nume: item.nume,\n    ora: item.ora,\n    data: item.data,\n    serviciu: 'consult'\n  },\n  conversation_config_override: {\n    agent: {\n      first_message: item.firstMessage\n    }\n  }\n};\n\nreturn { json: raspuns };"
+      },
+      "id": "ce34696b-0aa3-44e3-b2ae-ae38681a4dde",
+      "name": "Code - Pregateste Raspuns Inbound1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5872,
+        -6640
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Sheets - Citeste Programari SMS": {
+      "main": [
+        [
+          {
+            "node": "IF - Programare Maine + SMS Negol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Programare Maine + SMS Negol": {
+      "main": [
+        [
+          {
+            "node": "Code - Prepara Mesaj SMS1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMSLink - Trimite SMS": {
+      "main": [
+        [
+          {
+            "node": "Sheets - SMS_TRIMIS = TRIMIS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Confirmare prin link": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Gaseste Client dupa Telefon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Gaseste Client dupa Telefon": {
+      "main": [
+        [
+          {
+            "node": "Sheets - STATUS = VALID (Link)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - STATUS = VALID (Link)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - ElevenLabs Confirmare": {
+      "main": [
+        [
+          {
+            "node": "Code - Analizeaza Raspuns Confirmare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Analizeaza Raspuns Confirmare": {
+      "main": [
+        [
+          {
+            "node": "IF - Confirmare?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Reprogramare sau Anulare?": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Actualizeaza Data si Ora (Reprogramare)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets - STATUS = INVALID (Anulare)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - STATUS = INVALID (Anulare)": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Copiaza in NO SHOW TRACKING (Anulare)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Reprogramare sau Invalid? (Follow Up)": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Actualizeaza Programare (Follow Up)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets - STATUS = INVALID (No Show Final)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Actualizeaza Programare (Follow Up)": {
+      "main": [
+        [
+          {
+            "node": "Sheets - STATUS = REPROGRAMAT (No Show)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron 12:00 - Trimite SMS1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Citeste Programari SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Prepara Mesaj SMS1": {
+      "main": [
+        [
+          {
+            "node": "SMSLink - Trimite SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Confirmare?1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - STATUS = VALID (Apel)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IF - Reprogramare sau Anulare?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron 09-18 la 30min - Follow Up1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Citeste NO SHOW TRACKING1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Citeste NO SHOW TRACKING1": {
+      "main": [
+        [
+          {
+            "node": "Code - Filtreaza si Pregateste Follow Up1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Filtreaza si Pregateste Follow Up1": {
+      "main": [
+        [
+          {
+            "node": "ElevenLabs - Apel Follow Up1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ElevenLabs - Apel Follow Up1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - STATUS = APEL_FOLLOWUP_TRIMIS1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - ElevenLabs Follow Up1": {
+      "main": [
+        [
+          {
+            "node": "Code - Analizeaza Raspuns Follow Up1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Analizeaza Raspuns Follow Up1": {
+      "main": [
+        [
+          {
+            "node": "IF - Reprogramare sau Invalid? (Follow Up)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Verifica Disponibilitate": {
+      "main": [
+        [
+          {
+            "node": "Code - Verifica Interval Program",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Verifica Interval Program": {
+      "main": [
+        [
+          {
+            "node": "IF - In afara programului?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - In afara programului?": {
+      "main": [
+        [
+          {
+            "node": "Respond - In afara programului",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Calendar - Verifica Slot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Verifica Slot": {
+      "main": [
+        [
+          {
+            "node": "Code - Evalueaza Slot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Evalueaza Slot": {
+      "main": [
+        [
+          {
+            "node": "Respond - Disponibilitate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Reprogrameaza": {
+      "main": [
+        [
+          {
+            "node": "Code - Pregateste Reprogramare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Pregateste Reprogramare": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Gaseste Client Reprogramare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Gaseste Client Reprogramare": {
+      "main": [
+        [
+          {
+            "node": "Code - Merge Date Reprogramare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Merge Date Reprogramare": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - Gaseste Eveniment Vechi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Gaseste Eveniment Vechi": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - Actualizeaza Eveniment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Actualizeaza Eveniment": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Actualizeaza Reprogramare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Actualizeaza Reprogramare": {
+      "main": [
+        [
+          {
+            "node": "Respond - Reprogramare Confirmata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Anuleaza Programare": {
+      "main": [
+        [
+          {
+            "node": "Code - Pregateste Anulare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Pregateste Anulare": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Gaseste Client Anulare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Gaseste Client Anulare": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - Gaseste Eveniment Anulare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Gaseste Eveniment Anulare": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - Sterge Eveniment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Sterge Eveniment": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Sterge Rand",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Sterge Rand": {
+      "main": [
+        [
+          {
+            "node": "Respond - Anulare Confirmata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - SMS Trimis + Status NOT VALID": {
+      "main": [
+        [
+          {
+            "node": "Code - Pregateste Date NO SHOW",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Pregateste Date NO SHOW": {
+      "main": [
+        [
+          {
+            "node": "Sheets - STATUS = INVALID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Recupereaza Date pentru NOSHOW": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Copiaza in NO SHOW TRACKING1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron 23:59 - Expirare1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Citeste Programari1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Citeste Programari1": {
+      "main": [
+        [
+          {
+            "node": "IF - SMS Trimis + Status NOT VALID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - STATUS = INVALID1": {
+      "main": [
+        [
+          {
+            "node": "Code - Recupereaza Date pentru NOSHOW",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Programeaza1": {
+      "main": [
+        [
+          {
+            "node": "Code - Pregateste Programare1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Pregateste Programare1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Adauga Programare1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Adauga Programare1": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - Adauga Eveniment1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Adauga Eveniment1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - STATUS = PROGRAMAT1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - STATUS = PROGRAMAT1": {
+      "main": [
+        [
+          {
+            "node": "Respond - Programare Confirmata1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - SMS Trimis + Status Gol sau PROGRAMAT": {
+      "main": [
+        [
+          {
+            "node": "Code - Pregateste Date Apel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron 12:30 - Declanseaza Apel": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Citeste Programari Apel1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Citeste Programari Apel1": {
+      "main": [
+        [
+          {
+            "node": "IF - SMS Trimis + Status Gol sau PROGRAMAT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Pregateste Date Apel": {
+      "main": [
+        [
+          {
+            "node": "ElevenLabs - Initiaza Apel Confirmare1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ElevenLabs - Initiaza Apel Confirmare1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - APEL_TRIMIS = TRIMIS1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Context Apel Inbound1": {
+      "main": [
+        [
+          {
+            "node": "Code - Extrage Telefon Inbound1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Extrage Telefon Inbound1": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Gaseste Client Inbound1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Gaseste Client Inbound1": {
+      "main": [
+        [
+          {
+            "node": "Code - Determina Context1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Determina Context1": {
+      "main": [
+        [
+          {
+            "node": "Code - Pregateste Raspuns Inbound1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Pregateste Raspuns Inbound1": {
+      "main": [
+        [
+          {
+            "node": "Respond - Context Inbound1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1ba09073-f625-4c6f-b758-713020ae0df5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "553e93cba8431ade1a97257abc3320f4a40306dd9da04ac27930f895bb8f93bf"
+  },
+  "id": "KbrYHkz3NgQLHtv8",
+  "tags": []
+}
