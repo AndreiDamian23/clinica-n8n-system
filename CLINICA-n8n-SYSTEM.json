@@ -2463,7 +2463,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"call_name\": \"Confirmare programare\",\n  \"agent_id\": \"agent_6801kfdt3d4bf09shg6q55weq2ng\",\n  \"agent_phone_number_id\": \"phnum_6701kf5ztkj6efna4kx3j7sd9937\",\n  \"recipients\": [\n    {\n      \"phone_number\": \"={{ $json.telefon_formatat }}\",\n      \"conversation_initiation_client_data\": {\n        \"dynamic_variables\": {\n          \"nume\": \"={{ $json.nume }}\",\n          \"data\": \"={{ $json.data_programarii }}\",\n          \"ora\": \"={{ $json.ora_programarii }}\",\n          \"serviciu\": \"={{ $json.serviciu }}\",\n          \"tip_apel\": \"confirmare\"\n        }\n      }\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"call_name\": \"Confirmare programare\",\n  \"agent_id\": \"agent_6801kfdt3d4bf09shg6q55weq2ng\",\n  \"agent_phone_number_id\": \"phnum_6701kf5ztkj6efna4kx3j7sd9937\",\n  \"recipients\": [\n    {\n      \"phone_number\": \"={{ $json.telefon_formatat }}\",\n      \"conversation_initiation_client_data\": {\n        \"dynamic_variables\": {\n          \"nume\": \"={{ $json.nume }}\",\n          \"data\": \"={{ $json.data_programarii }}\",\n          \"ora\": \"={{ $json.ora_programarii }}\",\n          \"serviciu\": \"={{ $json.serviciu }}\",\n          \"tip_apel\": \"confirmare\"\n        },\n        \"conversation_config_override\": {\n          \"agent\": {\n            \"first_message\": \"={{ 'Buna ziua, ' + $json.nume + '! Va sunam de la clinica noastra. Maine la ora ' + $json.ora_programarii + ' aveti programare la ' + $json.serviciu + '. Confirmati prezenta?' }}\"\n          }\n        }\n      }\n    }\n  ]\n}",
         "options": {}
       },
       "id": "0f5f2ce3-b36a-46a2-b83e-a42705927611",
