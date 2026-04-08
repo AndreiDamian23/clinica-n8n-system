@@ -973,7 +973,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\n\nconst mesaj = `Buna ziua, ${item.NUME}, aveti programare maine ${item['DATA PROGRAMARII']} la ora ${item.ORA}.\\nConfirmati prezenta aici: https://andreidamian.app.n8n.cloud/webhook/confirmare?tel=${item.TELEFON}`;\n\nreturn [{\n  json: {\n    ...item,\n    mesaj_sms: mesaj\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\n\nconst mesaj = `Buna ziua, ${item.NUME}, aveti programare maine ${item['DATA PROGRAMARII']} la ora ${item.ORA}.\\nConfirmati prezenta aici: https://andreidamian.app.n8n.cloud/webhook/confirmare?tel=${item.TELEFON}`;\n\n// Populeaza cache la trimiterea SMS-ului (nu doar la apel outbound)\nconst staticData = $getWorkflowStaticData('global');\nstaticData.clientCache = staticData.clientCache || {};\nconst cheieCache = item.TELEFON.toString().replace(/\\D/g, '');\nstaticData.clientCache[cheieCache] = {\n  nume: item.NUME,\n  ora: item.ORA,\n  data: item['DATA PROGRAMARII'],\n  smsTrimis: 'TRIMIS',\n  apelTrimis: item.APEL_TRIMIS || '',\n  status: item.STATUS || ''\n};\n\nreturn [{\n  json: {\n    ...item,\n    mesaj_sms: mesaj\n  }\n}];"
       },
       "id": "ad88d465-b376-4d22-a784-552a7aacee4c",
       "name": "Code - Prepara Mesaj SMS1",
