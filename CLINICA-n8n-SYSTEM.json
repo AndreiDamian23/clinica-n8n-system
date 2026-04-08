@@ -2610,7 +2610,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const client = $input.first().json;\n\nconst telefon = (client.TELEFON || '').toString().trim();\nconst nume = (client.NUME || '').trim();\nconst data = (client['DATA PROGRAMARII'] || '').trim();\nconst ora = (client.ORA || '').trim();\nconst status = (client.STATUS || '').trim();\nconst smsTrimis = (client.SMS_TRIMIS || '').trim();\nconst apelTrimis = (client.APEL_TRIMIS || '').trim();\n\nlet tipContext = '';\nlet firstMessage = '';\n\n// PRIORITATE 1: SMS sau APEL trimis si inca neconfirmat = REAMINTIRE\nif ((smsTrimis === 'TRIMIS' || apelTrimis === 'TRIMIS') && status !== 'VALID' && status !== 'INVALID') {\n  tipContext = 'confirmare';\n  firstMessage = 'Buna ziua, ' + nume + '! Va sunam de la clinica X. Maine la ora ' + ora + ' aveti programare. Confirmati ca veniti?';\n\n// PRIORITATE 2: Deja confirmat\n} else if (status === 'VALID') {\n  tipContext = 'confirmat';\n  firstMessage = 'Buna ziua, ' + nume + '! Programarea dumneavoastra de maine la ora ' + ora + ' este deja confirmata. Cu ce va mai putem ajuta?';\n\n// PRIORITATE 3: Nu are programare\n} else {\n  tipContext = 'fara_programare';\n  firstMessage = 'Buna ziua! Clinica X, cu ce va putem ajuta?';\n}\n\nreturn {\n  json: {\n    tipContext,\n    firstMessage,\n    nume,\n    telefon,\n    data,\n    ora,\n    status,\n    smsTrimis,\n    apelTrimis\n  }\n};"
+        "jsCode": "const client = $input.first().json;\n\nconst telefon = (client.TELEFON || '').toString().trim();\nconst nume = (client.NUME || '').trim();\nconst data = (client['DATA PROGRAMARII'] || '').trim();\nconst ora = (client.ORA || '').trim();\nconst status = (client.STATUS || '').trim();\nconst smsTrimis = (client.SMS_TRIMIS || '').trim();\nconst apelTrimis = (client.APEL_TRIMIS || '').trim();\n\nlet tipContext = '';\nlet firstMessage = '';\n\n// PRIORITATE 1: SMS sau APEL trimis si inca neconfirmat = REAMINTIRE\nif ((smsTrimis === 'TRIMIS' || apelTrimis === 'TRIMIS') && status !== 'VALID' && status !== 'INVALID') {\n  tipContext = 'confirmare';\n  firstMessage = 'Buna ziua, ' + nume + '! Multumim ca ne-ati sunat. Aveti programare maine la ora ' + ora + '. Confirmati ca veniti?';\n\n// PRIORITATE 2: Deja confirmat\n} else if (status === 'VALID') {\n  tipContext = 'confirmat';\n  firstMessage = 'Buna ziua, ' + nume + '! Programarea dumneavoastra de maine la ora ' + ora + ' este deja confirmata. Cu ce va mai putem ajuta?';\n\n// PRIORITATE 3: Nu are programare\n} else {\n  tipContext = 'fara_programare';\n  firstMessage = 'Buna ziua! Clinica X, cu ce va putem ajuta?';\n}\n\nreturn {\n  json: {\n    tipContext,\n    firstMessage,\n    nume,\n    telefon,\n    data,\n    ora,\n    status,\n    smsTrimis,\n    apelTrimis\n  }\n};"
       },
       "id": "21436f83-d13d-4fc6-8834-dbd1291ee1a1",
       "name": "Code - Determina Context1",
@@ -2624,7 +2624,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
+        "responseBody": "={{ $json }}",
         "options": {}
       },
       "id": "b36de3f0-f41d-4e55-9745-13bc00e42cbf",
