@@ -2638,7 +2638,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\n\n// Formatul EXACT cerut de ElevenLabs pentru Conversation Initiation Webhook\nconst raspuns = {\n  type: 'conversation_initiation_client_data',\n  dynamic_variables: {\n    tipContext: item.tipContext,\n    nume: item.nume,\n    ora: item.ora,\n    data: item.data,\n    serviciu: 'consult'\n  },\n  conversation_config_override: {\n    agent: {\n      first_message: item.firstMessage\n    }\n  }\n};\n\nreturn { json: raspuns };"
+        "jsCode": "const item = $input.first().json;\n\n// Trimitem doar dynamic_variables - first_message este configurat direct in ElevenLabs\nconst raspuns = {\n  type: 'conversation_initiation_client_data',\n  dynamic_variables: {\n    tipContext: item.tipContext,\n    nume: item.nume,\n    ora: item.ora,\n    data: item.data,\n    serviciu: 'consult'\n  }\n};\n\nreturn { json: raspuns };"
       },
       "id": "ce34696b-0aa3-44e3-b2ae-ae38681a4dde",
       "name": "Code - Pregateste Raspuns Inbound1",
