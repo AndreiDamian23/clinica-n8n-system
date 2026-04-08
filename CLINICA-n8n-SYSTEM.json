@@ -2433,7 +2433,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\n\nlet telefon = item.TELEFON.toString().replace(/\\D/g, '');\nif (telefon.startsWith('0')) {\n  telefon = '+4' + telefon;\n} else if (!telefon.startsWith('+')) {\n  telefon = '+40' + telefon;\n}\n\nreturn {\n  json: {\n    ...item,\n    telefon_formatat: telefon,\n    nume: item.NUME,\n    data_programarii: item['DATA PROGRAMARII'],\n    ora_programarii: item.ORA,\n    serviciu: item.SERVICIU\n  }\n};"
+        "jsCode": "const item = $input.first().json;\n\nlet telefon = item.TELEFON.toString().replace(/\\D/g, '');\nif (telefon.startsWith('0')) {\n  telefon = '+4' + telefon;\n} else if (!telefon.startsWith('+')) {\n  telefon = '+40' + telefon;\n}\n\n// Salveaza date client in cache pentru apeluri inbound\nconst staticData = $getWorkflowStaticData('global');\nstaticData.clientCache = staticData.clientCache || {};\nconst cheieCache = item.TELEFON.toString().replace(/\\D/g, '');\nstaticData.clientCache[cheieCache] = {\n  nume: item.NUME,\n  ora: item.ORA,\n  data: item['DATA PROGRAMARII'],\n  smsTrimis: item.SMS_TRIMIS || '',\n  apelTrimis: item.APEL_TRIMIS || '',\n  status: item.STATUS || ''\n};\n\nreturn {\n  json: {\n    ...item,\n    telefon_formatat: telefon,\n    nume: item.NUME,\n    data_programarii: item['DATA PROGRAMARII'],\n    ora_programarii: item.ORA,\n    serviciu: item.SERVICIU\n  }\n};"
       },
       "id": "aab4ae96-9c45-49d9-bd8e-a4caf1791a9d",
       "name": "Code - Pregateste Date Apel",
@@ -2558,7 +2558,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\n// ElevenLabs trimite caller_id, nu telefon sau phone_number\nlet telefon = body.caller_id || body.telefon || body.phone_number || '';\n\ntelefon = telefon.toString().replace(/\\D/g, '');\n\nif (telefon.startsWith('40') && telefon.length === 11) {\n  telefon = '0' + telefon.slice(2);\n} else if (telefon.startsWith('4') && telefon.length === 10) {\n  telefon = '0' + telefon.slice(1);\n} else if (!telefon.startsWith('0') && telefon.length === 9) {\n  telefon = '0' + telefon;\n}\n\nreturn { json: { telefon } };"
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\n// ElevenLabs trimite caller_id\nlet telefon = body.caller_id || body.telefon || body.phone_number || '';\n\ntelefon = telefon.toString().replace(/\\D/g, '');\n\nif (telefon.startsWith('40') && telefon.length === 11) {\n  telefon = '0' + telefon.slice(2);\n} else if (telefon.startsWith('4') && telefon.length === 10) {\n  telefon = '0' + telefon.slice(1);\n} else if (!telefon.startsWith('0') && telefon.length === 9) {\n  telefon = '0' + telefon;\n}\n\n// Citeste date client din cache (salvat la outbound) - instant, fara Sheets\nconst staticData = $getWorkflowStaticData('global');\nconst cache = staticData.clientCache || {};\nconst clientData = cache[telefon] || {};\n\nreturn {\n  json: {\n    telefon,\n    nume: clientData.nume || '',\n    ora: clientData.ora || '',\n    data: clientData.data || '',\n    smsTrimis: clientData.smsTrimis || '',\n    apelTrimis: clientData.apelTrimis || '',\n    status: clientData.status || ''\n  }\n};"
       },
       "id": "af10846d-5553-4762-bccb-9a0a5474bc09",
       "name": "Code - Extrage Telefon Inbound1",
@@ -2610,7 +2610,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const client = $input.first().json;\n\nconst telefon = (client.TELEFON || '').toString().trim();\nconst nume = (client.NUME || '').trim();\nconst data = (client['DATA PROGRAMARII'] || '').trim();\nconst ora = (client.ORA || '').trim();\nconst status = (client.STATUS || '').trim();\nconst smsTrimis = (client.SMS_TRIMIS || '').trim();\nconst apelTrimis = (client.APEL_TRIMIS || '').trim();\n\nlet tipContext = '';\nlet firstMessage = '';\n\n// PRIORITATE 1: SMS sau APEL trimis si inca neconfirmat = REAMINTIRE\nif ((smsTrimis === 'TRIMIS' || apelTrimis === 'TRIMIS') && status !== 'VALID' && status !== 'INVALID') {\n  tipContext = 'confirmare';\n  firstMessage = 'Buna ziua, ' + nume + '! Vă sunăm de la clinica noastră. Vreau să vă reamitesc că mâine la ora ' + ora + ' aveți programare la noi. Rămâne că veniți?';\n\n// PRIORITATE 2: Deja confirmat\n} else if (status === 'VALID') {\n  tipContext = 'confirmat';\n  firstMessage = 'Buna ziua, ' + nume + '! Programarea dumneavoastra de maine la ora ' + ora + ' este deja confirmata. Cu ce va mai putem ajuta?';\n\n// PRIORITATE 3: Nu are programare\n} else {\n  tipContext = 'fara_programare';\n  firstMessage = 'Buna ziua! Clinica X, cu ce va putem ajuta?';\n}\n\nreturn {\n  json: {\n    tipContext,\n    firstMessage,\n    nume,\n    telefon,\n    data,\n    ora,\n    status,\n    smsTrimis,\n    apelTrimis\n  }\n};"
+        "jsCode": "const client = $input.first().json;\n\n// Suporta atat date din cache (lowercase) cat si din Sheets (uppercase)\nconst telefon = (client.telefon || client.TELEFON || '').toString().trim();\nconst nume = (client.nume || client.NUME || '').trim();\nconst data = (client.data || client['DATA PROGRAMARII'] || '').trim();\nconst ora = (client.ora || client.ORA || '').trim();\nconst status = (client.status || client.STATUS || '').trim();\nconst smsTrimis = (client.smsTrimis || client.SMS_TRIMIS || '').trim();\nconst apelTrimis = (client.apelTrimis || client.APEL_TRIMIS || '').trim();\n\nlet tipContext = '';\nlet firstMessage = '';\n\n// PRIORITATE 1: SMS sau APEL trimis si inca neconfirmat = REAMINTIRE\nif ((smsTrimis === 'TRIMIS' || apelTrimis === 'TRIMIS') && status !== 'VALID' && status !== 'INVALID') {\n  tipContext = 'confirmare';\n  firstMessage = 'Buna ziua, ' + nume + '! Vă sunăm de la clinica noastră. Vreau să vă reamitesc că mâine la ora ' + ora + ' aveți programare la noi. Rămâne că veniți?';\n\n// PRIORITATE 2: Deja confirmat\n} else if (status === 'VALID') {\n  tipContext = 'confirmat';\n  firstMessage = 'Buna ziua, ' + nume + '! Programarea dumneavoastra de maine la ora ' + ora + ' este deja confirmata. Cu ce va mai putem ajuta?';\n\n// PRIORITATE 3: Nu are programare\n} else {\n  tipContext = 'fara_programare';\n  firstMessage = 'Buna ziua! Clinica X, cu ce va putem ajuta?';\n}\n\nreturn {\n  json: {\n    tipContext,\n    firstMessage,\n    nume,\n    telefon,\n    data,\n    ora,\n    status,\n    smsTrimis,\n    apelTrimis\n  }\n};"
       },
       "id": "21436f83-d13d-4fc6-8834-dbd1291ee1a1",
       "name": "Code - Determina Context1",
@@ -3300,7 +3300,7 @@
       "main": [
         [
           {
-            "node": "Sheets - Gaseste Client Inbound1",
+            "node": "Code - Determina Context1",
             "type": "main",
             "index": 0
           }
