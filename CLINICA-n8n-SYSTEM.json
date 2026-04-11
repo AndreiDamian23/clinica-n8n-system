@@ -2638,7 +2638,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\n\nconst raspuns = {\n  type: 'conversation_initiation_client_data',\n  dynamic_variables: {\n    tipContext: item.tipContext,\n    nume: item.nume,\n    name: item.nume,\n    ora: item.ora,\n    data: item.data,\n    serviciu: 'consult',\n    tip_apel: 'inbound'\n  },\n  conversation_config_override: {\n    agent: {\n      first_message: item.firstMessage || 'Buna ziua! Clinica, cu ce va putem ajuta?'\n    }\n  }\n};\n\nreturn { json: raspuns };"
+        "jsCode": "const item = $input.first().json;\n\nconst raspuns = {\n  type: 'conversation_initiation_client_data',\n  dynamic_variables: {\n    tipContext: item.tipContext,\n    nume: item.nume,\n    name: item.nume,\n    ora: item.ora,\n    data: item.data,\n    serviciu: 'consult',\n    tip_apel: 'inbound'\n  }\n};\n\nreturn { json: raspuns };"
       },
       "id": "ce34696b-0aa3-44e3-b2ae-ae38681a4dde",
       "name": "Code - Pregateste Raspuns Inbound1",
