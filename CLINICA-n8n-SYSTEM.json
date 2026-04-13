@@ -1444,7 +1444,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst telefon = body.telefon || '';\nconst dataNoua = body.data_noua || '';\nconst oraNoua = body.ora_noua || '';\n\nconst [zi, luna, an] = dataNoua.split('.');\nconst [h, m] = oraNoua.split(':');\n\nconst start = new Date(parseInt(an), parseInt(luna)-1, parseInt(zi), parseInt(h), parseInt(m));\nconst end = new Date(start.getTime() + 60 * 60 * 1000);\n\nlet telefonCurat = telefon.toString().replace(/\\D/g, '');\nif (telefonCurat.startsWith('40')) telefonCurat = '0' + telefonCurat.slice(2);\nelse if (telefonCurat.startsWith('+40')) telefonCurat = '0' + telefonCurat.slice(3);\n\nreturn {\n  json: {\n    telefon: telefonCurat,\n    data_noua: dataNoua,\n    ora_noua: oraNoua,\n    start_iso: start.toISOString(),\n    end_iso: end.toISOString()\n  }\n};"
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst telefon = body.telefon || '';\nconst dataNoua = body.data_noua || '';\nconst oraNoua = body.ora_noua || '';\n\nconst [zi, luna, an] = dataNoua.split('.');\nconst [h, m] = oraNoua.split(':');\n\nconst pad = n => n.toString().padStart(2, '0');\nconst anI = parseInt(an), lunaI = parseInt(luna), ziI = parseInt(zi), hI = parseInt(h), mI = parseInt(m);\n\n// Construim datetime LOCAL (fara Z/UTC) ca n8n sa aplice timezone-ul workflow-ului (Europe/Bucharest)\nconst startLocal = `${anI}-${pad(lunaI)}-${pad(ziI)}T${pad(hI)}:${pad(mI)}:00`;\nlet endH = hI, endM = mI + 60;\nif (endM >= 60) { endH += 1; endM -= 60; }\nconst endLocal = `${anI}-${pad(lunaI)}-${pad(ziI)}T${pad(endH)}:${pad(endM)}:00`;\n\nlet telefonCurat = telefon.toString().replace(/\\D/g, '');\nif (telefonCurat.startsWith('40')) telefonCurat = '0' + telefonCurat.slice(2);\nelse if (telefonCurat.startsWith('+40')) telefonCurat = '0' + telefonCurat.slice(3);\n\nreturn {\n  json: {\n    telefon: telefonCurat,\n    data_noua: dataNoua,\n    ora_noua: oraNoua,\n    start_iso: startLocal,\n    end_iso: endLocal\n  }\n};"
       },
       "id": "de238649-28b2-4c16-a39f-9b4e03499e86",
       "name": "Code - Pregateste Reprogramare",
@@ -1532,6 +1532,19 @@
           "name": "Google Calendar account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const events = $input.all();\nconst titluAsteptat = $('Code - Merge Date Reprogramare').first().json.titlu_calendar;\n\n// Cauta evenimentul dupa titlul exact al clientului\nconst found = events.find(e => e.json.summary === titluAsteptat);\n\nif (!found) {\n  throw new Error('Evenimentul nu a fost gasit in calendar pentru: ' + titluAsteptat);\n}\n\nreturn [found];"
+      },
+      "id": "f7e8d9c0-b1a2-4c3d-8e5f-6a7b8c9d0e1f",
+      "name": "Code - Filtra Eveniment Reprogramare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5736,
+        -5088
+      ]
     },
     {
       "parameters": {
@@ -3011,6 +3024,17 @@
       ]
     },
     "Google Calendar - Gaseste Eveniment Vechi": {
+      "main": [
+        [
+          {
+            "node": "Code - Filtra Eveniment Reprogramare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Filtra Eveniment Reprogramare": {
       "main": [
         [
           {
