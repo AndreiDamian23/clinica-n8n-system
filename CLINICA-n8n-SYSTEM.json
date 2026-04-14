@@ -1124,7 +1124,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"call_name\": \"Follow Up No Show\",\n  \"agent_id\": \"agent_6801kfdt3d4bf09shg6q55weq2ng\",\n  \"agent_phone_number_id\": \"phnum_6701kf5ztkj6efna4kx3j7sd9937\",\n  \"recipients\": [\n    {\n      \"phone_number\": \"={{ $json.telefon_formatat }}\",\n      \"conversation_initiation_client_data\": {\n        \"dynamic_variables\": {\n          \"nume\": \"={{ $json.nume }}\",\n          \"name\": \"={{ $json.nume }}\",\n          \"data\": \"={{ $json.data_programarii }}\",\n          \"ora\": \"={{ $json.ora_programarii }}\",\n          \"serviciu\": \"={{ $json.serviciu || '' }}\",\n          \"tip_apel\": \"follow_up\"\n        }\n      }\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"call_name\": \"Follow Up No Show\",\n  \"agent_id\": \"agent_6801kfdt3d4bf09shg6q55weq2ng\",\n  \"agent_phone_number_id\": \"phnum_6701kf5ztkj6efna4kx3j7sd9937\",\n  \"recipients\": [\n    {\n      \"phone_number\": \"={{ $json.telefon_formatat }}\",\n      \"conversation_initiation_client_data\": {\n        \"dynamic_variables\": {\n          \"nume\": \"={{ $json.nume }}\",\n          \"name\": \"={{ $json.nume }}\",\n          \"data\": \"={{ $json.data_programarii }}\",\n          \"ora\": \"={{ $json.ora_programarii }}\",\n          \"serviciu\": \"={{ $json.serviciu || '' }}\",\n          \"tip_apel\": \"follow_up\",\n          \"data_azi\": \"={{ $now.setZone('Europe/Bucharest').toFormat('dd.MM.yyyy') }}\"\n        }\n      }\n    }\n  ]\n}",
         "options": {}
       },
       "id": "a90eeec4-0989-4def-b605-33fa191f9c87",
@@ -1535,7 +1535,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const events = $input.all();\nconst numeClient = $('Code - Merge Date Reprogramare').first().json.nume;\nconst titluAsteptat = $('Code - Merge Date Reprogramare').first().json.titlu_calendar;\n\n// 1. Match exact (cu trim pentru spatii accidentale)\n// 2. Fallback: cauta numele clientului in titlu (robustete la liniute/formatare diferita)\nconst found = events.find(e => {\n  if (!e.json.summary) return false;\n  const s = e.json.summary.trim();\n  return s === titluAsteptat.trim() || s.toLowerCase().includes(numeClient.toLowerCase());\n});\n\nif (!found) {\n  const titluri = events.slice(0, 15).map(e => e.json.summary || 'N/A').join(' | ');\n  throw new Error(`Nu s-a gasit evenimentul pentru \"${numeClient}\". Titluri gasite: ${titluri}`);\n}\n\nreturn [found];"
+        "jsCode": "const events = $input.all();\nconst numeClient = $('Code - Merge Date Reprogramare').first().json.nume;\nconst titluAsteptat = $('Code - Merge Date Reprogramare').first().json.titlu_calendar;\n\n// 1. Match exact (cu trim pentru spatii accidentale)\n// 2. Fallback: cauta numele clientului in titlu\nconst found = events.find(e => {\n  if (!e.json.summary) return false;\n  const s = e.json.summary.trim();\n  return s === titluAsteptat.trim() || s.toLowerCase().includes(numeClient.toLowerCase());\n});\n\nif (!found) {\n  // Nu opri flow-ul - continua si actualizeaza doar Sheets\n  return [{ json: { calendarEventFound: false } }];\n}\n\nreturn [{ json: { ...found.json, calendarEventFound: true } }];"
       },
       "id": "f7e8d9c0-b1a2-4c3d-8e5f-6a7b8c9d0e1f",
       "name": "Code - Filtra Eveniment Reprogramare",
@@ -1543,6 +1543,39 @@
       "typeVersion": 2,
       "position": [
         5736,
+        -5088
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-calendar-found",
+              "leftValue": "={{ $json.calendarEventFound }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "name": "IF - Calendar Event Gasit?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5976,
         -5088
       ]
     },
@@ -2476,7 +2509,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"call_name\": \"Confirmare programare\",\n  \"agent_id\": \"agent_6801kfdt3d4bf09shg6q55weq2ng\",\n  \"agent_phone_number_id\": \"phnum_6701kf5ztkj6efna4kx3j7sd9937\",\n  \"recipients\": [\n    {\n      \"phone_number\": \"={{ $json.telefon_formatat }}\",\n      \"conversation_initiation_client_data\": {\n        \"dynamic_variables\": {\n          \"nume\": \"={{ $json.nume }}\",\n          \"name\": \"={{ $json.nume }}\",\n          \"data\": \"={{ $json.data_programarii }}\",\n          \"ora\": \"={{ $json.ora_programarii }}\",\n          \"serviciu\": \"={{ $json.serviciu }}\",\n          \"tip_apel\": \"confirmare\"\n        }\n      }\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"call_name\": \"Confirmare programare\",\n  \"agent_id\": \"agent_6801kfdt3d4bf09shg6q55weq2ng\",\n  \"agent_phone_number_id\": \"phnum_6701kf5ztkj6efna4kx3j7sd9937\",\n  \"recipients\": [\n    {\n      \"phone_number\": \"={{ $json.telefon_formatat }}\",\n      \"conversation_initiation_client_data\": {\n        \"dynamic_variables\": {\n          \"nume\": \"={{ $json.nume }}\",\n          \"name\": \"={{ $json.nume }}\",\n          \"data\": \"={{ $json.data_programarii }}\",\n          \"ora\": \"={{ $json.ora_programarii }}\",\n          \"serviciu\": \"={{ $json.serviciu }}\",\n          \"tip_apel\": \"confirmare\",\n          \"data_azi\": \"={{ $now.setZone('Europe/Bucharest').toFormat('dd.MM.yyyy') }}\"\n        }\n      }\n    }\n  ]\n}",
         "options": {}
       },
       "id": "0f5f2ce3-b36a-46a2-b83e-a42705927611",
@@ -2651,7 +2684,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\n\nconst raspuns = {\n  type: 'conversation_initiation_client_data',\n  dynamic_variables: {\n    tipContext: item.tipContext,\n    nume: item.nume,\n    name: item.nume,\n    ora: item.ora,\n    data: item.data,\n    serviciu: 'consult',\n    tip_apel: 'inbound'\n  }\n};\n\nreturn { json: raspuns };"
+        "jsCode": "const item = $input.first().json;\n\nconst nowRo = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Bucharest' }));\nconst dataAzi = `${String(nowRo.getDate()).padStart(2,'0')}.${String(nowRo.getMonth()+1).padStart(2,'0')}.${nowRo.getFullYear()}`;\n\nconst raspuns = {\n  type: 'conversation_initiation_client_data',\n  dynamic_variables: {\n    tipContext: item.tipContext,\n    nume: item.nume,\n    name: item.nume,\n    ora: item.ora,\n    data: item.data,\n    serviciu: 'consult',\n    tip_apel: 'inbound',\n    data_azi: dataAzi\n  }\n};\n\nreturn { json: raspuns };"
       },
       "id": "ce34696b-0aa3-44e3-b2ae-ae38681a4dde",
       "name": "Code - Pregateste Raspuns Inbound1",
@@ -3038,7 +3071,25 @@
       "main": [
         [
           {
+            "node": "IF - Calendar Event Gasit?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Calendar Event Gasit?": {
+      "main": [
+        [
+          {
             "node": "Google Calendar - Actualizeaza Eveniment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets - Actualizeaza Reprogramare",
             "type": "main",
             "index": 0
           }
