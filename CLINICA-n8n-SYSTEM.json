@@ -1312,7 +1312,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst data = body.data || '';\nconst ora = body.ora || '';\n\nconst [zi, luna, an] = data.split('.');\nconst [h, m] = ora.split(':');\n\nconst start = new Date(parseInt(an), parseInt(luna)-1, parseInt(zi), parseInt(h), parseInt(m));\nconst end = new Date(start.getTime() + 60 * 60 * 1000);\n\nconst oraStart = parseInt(h);\nif (oraStart < 9 || oraStart >= 18) {\n  return { json: { disponibil: false, motiv: 'In afara programului. Programul este intre 09:00 si 18:00.' } };\n}\n\nreturn {\n  json: {\n    disponibil: null,\n    start_iso: start.toISOString(),\n    end_iso: end.toISOString(),\n    data,\n    ora\n  }\n};"
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst data = (body.data || '').toString().trim();\nconst ora = (body.ora || '').toString().trim();\n\n// Validare format data (dd.MM.yyyy)\nconst dataParts = data.split('.');\nif (dataParts.length !== 3) {\n  return { json: { disponibil: false, motiv: `Format data invalid: \"${data}\". Folositi formatul dd.MM.yyyy.` } };\n}\nconst [zi, luna, an] = dataParts;\n\n// Validare format ora (HH:mm)\nconst oraParts = ora.split(':');\nif (oraParts.length < 2) {\n  return { json: { disponibil: false, motiv: `Format ora invalid: \"${ora}\". Folositi formatul HH:mm.` } };\n}\nconst [h, m] = oraParts;\n\nconst anI = parseInt(an), lunaI = parseInt(luna), ziI = parseInt(zi), hI = parseInt(h), mI = parseInt(m);\n\nif ([anI, lunaI, ziI, hI, mI].some(n => isNaN(n))) {\n  return { json: { disponibil: false, motiv: `Data sau ora invalida: \"${data}\" \"${ora}\".` } };\n}\n\n// Verificare program de lucru\nif (hI < 9 || hI >= 18) {\n  return { json: { disponibil: false, motiv: 'In afara programului. Programul este intre 09:00 si 18:00.' } };\n}\n\n// Construim datetime LOCAL (fara Z) - n8n aplica timezone-ul workflow-ului\nconst pad = n => n.toString().padStart(2, '0');\nconst startLocal = `${anI}-${pad(lunaI)}-${pad(ziI)}T${pad(hI)}:${pad(mI)}:00`;\nlet endH = hI, endM = mI + 60;\nif (endM >= 60) { endH += 1; endM -= 60; }\nconst endLocal = `${anI}-${pad(lunaI)}-${pad(ziI)}T${pad(endH)}:${pad(endM)}:00`;\n\nreturn {\n  json: {\n    disponibil: null,\n    start_iso: startLocal,\n    end_iso: endLocal,\n    data,\n    ora\n  }\n};"
       },
       "id": "a53c64f5-9773-4f6b-a175-ef5f33b31521",
       "name": "Code - Verifica Interval Program",
@@ -1380,7 +1380,10 @@
           "mode": "list",
           "cachedResultName": "andrei.d.damian@gmail.com"
         },
-        "options": {}
+        "options": {
+          "timeMin": "={{ $('Code - Verifica Interval Program').first().json.start_iso }}",
+          "timeMax": "={{ $('Code - Verifica Interval Program').first().json.end_iso }}"
+        }
       },
       "id": "05274f91-dc7e-448e-966e-2c937b39637c",
       "name": "Google Calendar - Verifica Slot",
