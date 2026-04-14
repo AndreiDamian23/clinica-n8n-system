@@ -1830,6 +1830,52 @@
     },
     {
       "parameters": {
+        "jsCode": "const events = $input.all();\nconst numeClient = $('Sheets - Gaseste Client Anulare').first().json.NUME;\n\nconst found = events.find(e => {\n  if (!e.json.summary) return false;\n  const s = e.json.summary.trim();\n  return s === `${numeClient} - Programare` || s.toLowerCase().includes(numeClient.toLowerCase());\n});\n\nif (!found) {\n  // Nu opri flow-ul - continua si sterge doar din Sheets\n  return [{ json: { calendarEventFound: false } }];\n}\n\nreturn [{ json: { ...found.json, calendarEventFound: true } }];"
+      },
+      "id": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+      "name": "Code - Filtra Eveniment Anulare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5512,
+        -4896
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-cal-anulare",
+              "leftValue": "={{ $json.calendarEventFound }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d4e5f6a7-b8c9-0123-defa-456789012345",
+      "name": "IF - Calendar Event Gasit Anulare?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5632,
+        -4896
+      ]
+    },
+    {
+      "parameters": {
         "operation": "delete",
         "calendar": {
           "__rl": true,
@@ -3159,7 +3205,36 @@
       "main": [
         [
           {
+            "node": "Code - Filtra Eveniment Anulare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Filtra Eveniment Anulare": {
+      "main": [
+        [
+          {
+            "node": "IF - Calendar Event Gasit Anulare?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Calendar Event Gasit Anulare?": {
+      "main": [
+        [
+          {
             "node": "Google Calendar - Sterge Eveniment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets - Sterge Rand",
             "type": "main",
             "index": 0
           }
