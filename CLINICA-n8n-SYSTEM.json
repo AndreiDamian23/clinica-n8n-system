@@ -1447,7 +1447,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst telefon = body.telefon || '';\nconst dataNoua = body.data_noua || '';\nconst oraNoua = body.ora_noua || '';\n\nconst [zi, luna, an] = dataNoua.split('.');\nconst [h, m] = oraNoua.split(':');\n\nconst pad = n => n.toString().padStart(2, '0');\nconst anI = parseInt(an), lunaI = parseInt(luna), ziI = parseInt(zi), hI = parseInt(h), mI = parseInt(m);\n\n// Construim datetime LOCAL (fara Z/UTC) ca n8n sa aplice timezone-ul workflow-ului (Europe/Bucharest)\nconst startLocal = `${anI}-${pad(lunaI)}-${pad(ziI)}T${pad(hI)}:${pad(mI)}:00`;\nlet endH = hI, endM = mI + 60;\nif (endM >= 60) { endH += 1; endM -= 60; }\nconst endLocal = `${anI}-${pad(lunaI)}-${pad(ziI)}T${pad(endH)}:${pad(endM)}:00`;\n\nlet telefonCurat = telefon.toString().replace(/\\D/g, '');\nif (telefonCurat.startsWith('40')) telefonCurat = '0' + telefonCurat.slice(2);\nelse if (telefonCurat.startsWith('+40')) telefonCurat = '0' + telefonCurat.slice(3);\n\nreturn {\n  json: {\n    telefon: telefonCurat,\n    data_noua: dataNoua,\n    ora_noua: oraNoua,\n    start_iso: startLocal,\n    end_iso: endLocal\n  }\n};"
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst telefon = body.telefon || '';\nconst dataNoua = body.data_noua || '';\nconst oraNoua = body.ora_noua || '';\n\nconst [zi, luna, an] = dataNoua.split('.');\nconst [h, m] = oraNoua.split(':');\n\nconst pad = n => n.toString().padStart(2, '0');\nconst anI = parseInt(an), lunaI = parseInt(luna), ziI = parseInt(zi), hI = parseInt(h), mI = parseInt(m);\n\n// Offset Romania: EEST (mart-oct) = +03:00, EET (nov-feb) = +02:00\nconst tzOffset = (lunaI >= 3 && lunaI <= 10) ? '+03:00' : '+02:00';\n\n// ISO cu offset explicit ca Google Calendar sa nu calculeze gresit durata\nconst startISO = `${anI}-${pad(lunaI)}-${pad(ziI)}T${pad(hI)}:${pad(mI)}:00${tzOffset}`;\nlet endH = hI, endM = mI + 60;\nif (endM >= 60) { endH += 1; endM -= 60; }\nconst endISO = `${anI}-${pad(lunaI)}-${pad(ziI)}T${pad(endH)}:${pad(endM)}:00${tzOffset}`;\n\nlet telefonCurat = telefon.toString().replace(/\\D/g, '');\nif (telefonCurat.startsWith('40')) telefonCurat = '0' + telefonCurat.slice(2);\nelse if (telefonCurat.startsWith('+40')) telefonCurat = '0' + telefonCurat.slice(3);\n\nreturn {\n  json: {\n    telefon: telefonCurat,\n    data_noua: dataNoua,\n    ora_noua: oraNoua,\n    start_iso: startISO,\n    end_iso: endISO\n  }\n};"
       },
       "id": "de238649-28b2-4c16-a39f-9b4e03499e86",
       "name": "Code - Pregateste Reprogramare",
@@ -1595,7 +1595,8 @@
         "updateFields": {
           "end": "={{ $('Code - Merge Date Reprogramare').first().json.end_iso }}",
           "start": "={{ $('Code - Merge Date Reprogramare').first().json.start_iso }}",
-          "summary": "={{ $('Code - Merge Date Reprogramare').first().json.titlu_calendar }}"
+          "summary": "={{ $('Code - Merge Date Reprogramare').first().json.titlu_calendar }}",
+          "description": "=Telefon: {{ $('Code - Merge Date Reprogramare').first().json.telefon }}\nData: {{ $('Code - Merge Date Reprogramare').first().json.data_noua }}\nOra: {{ $('Code - Merge Date Reprogramare').first().json.ora_noua }}\nDurata: 60 minute\nServiciu: Consult"
         }
       },
       "id": "8ce24df6-5225-4d54-97e0-9e8a1a75a10d",
