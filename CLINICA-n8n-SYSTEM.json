@@ -1919,7 +1919,7 @@
         "toDelete": {
           "rows": [
             {
-              "rowIndex": "={{ $('Sheets - Gaseste Client Anulare').first().json.row_number }}"
+              "rowIndex": "={{ $json.row_number }}"
             }
           ]
         }
@@ -1929,7 +1929,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
-        5856,
+        6336,
         -4896
       ],
       "credentials": {
@@ -1938,6 +1938,52 @@
           "name": "Google Sheets account 4"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const clientData = $('Sheets - Gaseste Client Anulare').all();\nconst rawRowNum = (clientData && clientData.length > 0) ? clientData[0].json.row_number : null;\nconst rowNum = parseInt(rawRowNum);\nconst isValid = !isNaN(rowNum) && rowNum >= 1;\nreturn [{ json: { row_number: isValid ? rowNum : 0, canDelete: isValid } }];"
+      },
+      "id": "e5f6a7b8-c9d0-1234-efab-567890123456",
+      "name": "Code - Extrage Row Anulare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5856,
+        -4896
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-row-valid",
+              "leftValue": "={{ $json.canDelete }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f6a7b8c9-d0e1-2345-fabc-678901234567",
+      "name": "IF - Row Sterge Valida?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        6096,
+        -4896
+      ]
     },
     {
       "parameters": {
@@ -1950,7 +1996,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        6096,
+        6576,
         -4896
       ]
     },
@@ -3234,7 +3280,7 @@
         ],
         [
           {
-            "node": "Sheets - Sterge Rand",
+            "node": "Code - Extrage Row Anulare",
             "type": "main",
             "index": 0
           }
@@ -3245,7 +3291,36 @@
       "main": [
         [
           {
+            "node": "Code - Extrage Row Anulare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Extrage Row Anulare": {
+      "main": [
+        [
+          {
+            "node": "IF - Row Sterge Valida?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Row Sterge Valida?": {
+      "main": [
+        [
+          {
             "node": "Sheets - Sterge Rand",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - Anulare Confirmata",
             "type": "main",
             "index": 0
           }
